@@ -1,6 +1,7 @@
 import json
 import datetime
 import time
+import math
 
 # _=%
 
@@ -128,18 +129,40 @@ s_Boxes = [
 
 
 
-def bitNormalization(bitString,lengthToBe= 64): # takes nth bit binary value returns 64bit binary values by adding extrabits if input binString is less than 64 else throws exceptation
-	if len(bitString) >lengthToBe:
-		print("error plainText is greater that 64 bits ")
-		exit()
-	elif len(bitString) < lengthToBe:
-		#check if the bPlainText is of even length or not if not then append additional bit at front
+# def bitNormalization(bitString,lengthToBe= 64): # takes nth bit binary value returns 64bit binary values by adding extrabits if input binString is less than 64 else throws exceptation
+# 	if len(bitString) > lengthToBe:
+# 		print("error plainText is greater that 64 bits ")
+# 		exit()
+# 	elif len(bitString) < lengthToBe:
+# 		#check if the bPlainText is of even length or not if not then append additional bit at front
 
-		extraBits = lengthToBe - len(bitString)   #extra bits to be added to make 64bits
+# 		extraBits = lengthToBe - len(bitString)   #extra bits to be added to make 64bits
 
-		bitString = ''.join('0' for i in range(extraBits)) + bitString
+# 		bitString = ''.join('0' for i in range(extraBits)) + bitString
 
-		return bitString
+# 		return bitString
+
+
+def bitNormalization(bitString,blockSize = 64):
+	totalBlocks = math.ceil(len(bitString) / blockSize )
+
+	blocks_of_64bits = []
+
+	for i in range(totalBlocks):
+		blockString = bitString[ i * blockSize : i * blockSize + blockSize]
+
+		if len(blockString) < blockSize :
+			#check if the bPlainText is of even length or not if not then append additional bit at front
+
+			extraBits = blockSize - len(blockString)   #extra bits to be added to make 64bits
+
+			blockString = ''.join('0' for i in range(extraBits)) + blockString
+
+		blocks_of_64bits.append(blockString)
+
+	return blocks_of_64bits
+
+
 
 
 def dropParityBits(bitString,pos= [7,15,23,31,39,47,55,63]):
@@ -158,15 +181,15 @@ def permute(binString,pBlock,len): # len defines output binarystring length
 
 def binStr2string(binstring,blockLength = 8 ):
 	index = 0
-	str = ''
+	string = ''
 	for i in range(int(len(binstring)/blockLength)):
 		bin = binstring[index:index+blockLength]
-		str += chr(int(bin,2))
+		string += chr(int(bin,2)) if int(bin,2) != 0 else ''  # ignoring padding zeros if all 8 bits are zero
 		index += blockLength
 
 
 
-	return str
+	return string
 
 
 
@@ -308,43 +331,55 @@ def  DES_encryption(plainText,key):
 
 		bPlainText = string2binStr(plainText)  #binary  representation of the plain Text
 
-		bPlainText =  bitNormalization(bPlainText)
+		bPlainText_Blocks =  bitNormalization(bPlainText)
+
+		print("plainText",plainText)
+		print(len(bPlainText))
+		print(len(bPlainText_Blocks))
 
 		#initital permutation
+		cipherText = ''
+		cipherText_hex = ''
 
-		bPlainText = permute(bPlainText,initial_permutation_Table,64)
+		for bPlainText in bPlainText_Blocks : # for each  64 bit blocks
 
-		#split bPlainText into two equal halves
+				bPlainText = permute(bPlainText,initial_permutation_Table,64)
 
-		lbPlainText, rbPlainText = twoEqualHalves(bPlainText)
+				#split bPlainText into two equal halves
 
-		# generate round keys
-		round_key_Generate(key)
+				lbPlainText, rbPlainText = twoEqualHalves(bPlainText)
 
-		for i in range(16):
+				# generate round keys
+				round_key_Generate(key)
 
-			fun_Output = DES_function(rbPlainText,roundKeys[i])
+				for i in range(16):
 
-			xor_Output =  xor_(lbPlainText,fun_Output)
+					fun_Output = DES_function(rbPlainText,roundKeys[i])
 
-			#swap left and right
+					xor_Output =  xor_(lbPlainText,fun_Output)
 
-			lbPlainText , rbPlainText = swap(xor_Output,rbPlainText)
+					#swap left and right
+
+					lbPlainText , rbPlainText = swap(xor_Output,rbPlainText)
 
 
-		# combined left and right halves
+				# combined left and right halves
 
-		combined_binString = lbPlainText + rbPlainText
+				combined_binString = lbPlainText + rbPlainText
 
-		# apply final permuation
+				# apply final permuation
 
-		final_Permutation_value = permute(combined_binString,final_Permutation_Table,64)
+				final_Permutation_value = permute(combined_binString,final_Permutation_Table,64)
 
-		cipherText = binStr2string(final_Permutation_value)
-		cipherText_hex = bin2hex(final_Permutation_value)
+				cipherText += binStr2string(final_Permutation_value)
+				cipherText_hex += bin2hex(final_Permutation_value)
+
+
+				print("count",bPlainText_Blocks)
+
 
 		print("cipherText-hex value",bin2hex(final_Permutation_value))
-		print("cipherText - bin value ",hex2bin(cipherText_hex))
+		print("cipherText - bin value ",len(hex2bin(cipherText_hex)))
 		print("cipher Text - bin value ",final_Permutation_value)
 		print(" CIpherText - ascii ", cipherText)
 		print()
@@ -357,42 +392,45 @@ def DES_decryption(cipherText,key): # cipher text takes hex value suppose
 
 		bCipherText = hex2bin(cipherText)  #binary  representation of the plain Text
 
-		print(bCipherText)
-		print(string2binStr("apple"))
-		# bPlainText =  bitNormalization(bPlainText)
+
+		bCipherText_Blocks =  bitNormalization(bCipherText)
+
+		plainText =''
+		hexValue = ''
 
 		#initital permutation
 
-		bCipherText = permute(bCipherText,initial_permutation_Table,64)
+		for bCipherText in bCipherText_Blocks :
+			bCipherText = permute(bCipherText,initial_permutation_Table,64)
 
-		#split bPlainText into two equal halves
+			#split bPlainText into two equal halves
 
-		rbCipherText, lbCipherText = twoEqualHalves(bCipherText)
+			rbCipherText, lbCipherText = twoEqualHalves(bCipherText)
 
-		# generate round keys
-		# round_key_Generate(key)
+			# generate round keys
+			# round_key_Generate(key)
 
-		for i in range(15,-1,-1):
+			for i in range(15,-1,-1):
 
-			fun_Output = DES_function(rbCipherText,roundKeys[i])
+				fun_Output = DES_function(rbCipherText,roundKeys[i])
 
-			xor_Output =  xor_(lbCipherText,fun_Output)
+				xor_Output =  xor_(lbCipherText,fun_Output)
 
-			#swap left and right
+				#swap left and right
 
-			lbCipherText , rbCipherText = swap(xor_Output,rbCipherText)
+				lbCipherText , rbCipherText = swap(xor_Output,rbCipherText)
 
 
-		# combined left and right halves
-
-		combined_binString = rbCipherText + lbCipherText
+			# combined left and right halves
+			combined_binString = rbCipherText + lbCipherText
 
 		# apply final permuation
+			final_Permutation_value = permute(combined_binString,final_Permutation_Table,64)
 
-		final_Permutation_value = permute(combined_binString,final_Permutation_Table,64)
+		#resulting string from different block are concatinated
 
-		plainText = binStr2string(final_Permutation_value)
-		hexValue = bin2hex(final_Permutation_value)
+			plainText += binStr2string(final_Permutation_value)
+			hexValue += bin2hex(final_Permutation_value)
 
 		print("plainText-hex value",bin2hex(final_Permutation_value))
 		print("plainText - bin value ",hex2bin(hexValue))
@@ -401,9 +439,11 @@ def DES_decryption(cipherText,key): # cipher text takes hex value suppose
 
 
 if __name__ == '__main__':
-	plainText = "a quick"
+	plainText = "a quick brown fox jumps over the lazy dogs"
 	key= "apple"
-	cipherText = DES_encryption("a quick","apple")
+	cipherText = DES_encryption(plainText,"apple")
+
+	print(cipherText)
 	DES_decryption(cipherText,"apple")
 
 
