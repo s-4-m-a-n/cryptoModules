@@ -9,54 +9,54 @@ import math
 #     return True if len(string)%2 == 0 else False
 
 
-roundKeys = []
+
 
 
 compression_PBlock = [14, 17, 11, 24, 1, 5,
-                       3, 28, 15, 6, 21, 10,
-                      23, 19, 12, 4, 26, 8,
-                      16, 7, 27, 20, 13, 2,
-                      41, 52, 31, 37, 47, 55,
-                      30, 40, 51, 45, 33, 48,
-                      44, 49, 39, 56, 34, 53,
-                      46, 42, 50, 36, 29, 32]
+					   3, 28, 15, 6, 21, 10,
+					  23, 19, 12, 4, 26, 8,
+					  16, 7, 27, 20, 13, 2,
+					  41, 52, 31, 37, 47, 55,
+					  30, 40, 51, 45, 33, 48,
+					  44, 49, 39, 56, 34, 53,
+					  46, 42, 50, 36, 29, 32]
 
 
 initial_permutation_Table  = [58, 50, 42, 34, 26, 18, 10, 2,
-                         60, 52, 44, 36, 28, 20, 12, 4,
-                         62, 54, 46, 38, 30, 22, 14, 6,
-                         64, 56, 48, 40, 32, 24, 16, 8,
-                         57, 49, 41, 33, 25, 17, 9, 1,
-                         59, 51, 43, 35, 27, 19, 11, 3,
-                         61, 53, 45, 37, 29, 21, 13, 5,
-                         63, 55, 47, 39, 31, 23, 15, 7 ]
+						 60, 52, 44, 36, 28, 20, 12, 4,
+						 62, 54, 46, 38, 30, 22, 14, 6,
+						 64, 56, 48, 40, 32, 24, 16, 8,
+						 57, 49, 41, 33, 25, 17, 9, 1,
+						 59, 51, 43, 35, 27, 19, 11, 3,
+						 61, 53, 45, 37, 29, 21, 13, 5,
+						 63, 55, 47, 39, 31, 23, 15, 7 ]
 
 #inverse initial permutation
 final_Permutation_Table  = [40, 8, 48, 16, 56, 24, 64, 32,
-                           39, 7, 47, 15, 55, 23, 63, 31,
-                           38, 6, 46, 14, 54, 22, 62, 30,
-                           37, 5, 45, 13, 53, 21, 61, 29,
-                           36, 4, 44, 12, 52, 20, 60, 28,
-                           35, 3, 43, 11, 51, 19, 59, 27,
-                           34, 2, 42, 10, 50, 18, 58, 26,
-                           33, 1, 41, 9, 49, 17, 57, 25]
+						   39, 7, 47, 15, 55, 23, 63, 31,
+						   38, 6, 46, 14, 54, 22, 62, 30,
+						   37, 5, 45, 13, 53, 21, 61, 29,
+						   36, 4, 44, 12, 52, 20, 60, 28,
+						   35, 3, 43, 11, 51, 19, 59, 27,
+						   34, 2, 42, 10, 50, 18, 58, 26,
+						   33, 1, 41, 9, 49, 17, 57, 25]
 
 #straight-P-box
 straight_Permutation_Table = [  16, 7, 20, 21,
-                    			29, 12, 28, 17,
-                    			1, 15, 23, 26,
-                    			5, 18, 31, 10,
-                    			2, 8, 24, 14,
-                    			32, 27, 3, 9,
-                    			19, 13, 30, 6,
-                    			22, 11, 4, 25 ]
+								29, 12, 28, 17,
+								1, 15, 23, 26,
+								5, 18, 31, 10,
+								2, 8, 24, 14,
+								32, 27, 3, 9,
+								19, 13, 30, 6,
+								22, 11, 4, 25 ]
 
 expansion_P_Box = [	32, 1, 2, 3, 4, 5, 4, 5,
-		            6, 7, 8, 9, 8, 9, 10, 11,
-		            12, 13, 12, 13, 14, 15, 16, 17,
-		            16, 17, 18, 19, 20, 21, 20, 21,
-		            22, 23, 24, 25, 24, 25, 26, 27,
-		            28, 29, 28, 29, 30, 31, 32, 1 ]
+					6, 7, 8, 9, 8, 9, 10, 11,
+					12, 13, 12, 13, 14, 15, 16, 17,
+					16, 17, 18, 19, 20, 21, 20, 21,
+					22, 23, 24, 25, 24, 25, 26, 27,
+					28, 29, 28, 29, 30, 31, 32, 1 ]
 
 s_Boxes = [
 			# Box-1
@@ -129,18 +129,17 @@ s_Boxes = [
 
 
 
-# def bitNormalization(bitString,lengthToBe= 64): # takes nth bit binary value returns 64bit binary values by adding extrabits if input binString is less than 64 else throws exceptation
-# 	if len(bitString) > lengthToBe:
-# 		print("error plainText is greater that 64 bits ")
-# 		exit()
-# 	elif len(bitString) < lengthToBe:
-# 		#check if the bPlainText is of even length or not if not then append additional bit at front
+def key_Normalization(bitString,lengthToBe= 64): # takes nth bit binary value returns 64bit binary values by adding extrabits if input binString is less than 64 else throws exceptation
+	if len(bitString) > lengthToBe:
+		print("error plainText is greater that 64 bits ")
+		exit()
+	elif len(bitString) < lengthToBe:
+		#check if the bPlainText is of even length or not if not then append additional bit at front
+		extraBits = lengthToBe - len(bitString)   #extra bits to be added to make 64bits
 
-# 		extraBits = lengthToBe - len(bitString)   #extra bits to be added to make 64bits
+		bitString = ''.join('0' for i in range(extraBits)) + bitString
 
-# 		bitString = ''.join('0' for i in range(extraBits)) + bitString
-
-# 		return bitString
+		return bitString
 
 
 def bitNormalization(bitString,blockSize = 64):
@@ -169,7 +168,7 @@ def dropParityBits(bitString,pos= [7,15,23,31,39,47,55,63]):
 	return ''.join(bitString[i] if i not in pos else '' for i in range(len(bitString)))
 
 
-def circularShiftLeft(binary,value): # value defines length bits shift ie one bit or two bit shift
+def circularLeftShift(binary,value): # value defines length bits shift ie one bit or two bit shift
 	return binary[value:]+ binary[:value]
 
 
@@ -196,8 +195,9 @@ def binStr2string(binstring,blockLength = 8 ):
 
 
 def  round_key_Generate(actualKey): #returns round keys
+	roundKeys = []
 	bActualKey = string2binStr(actualKey)
-	bActualKey = bitNormalization(bActualKey) # normalized into 64bits
+	bActualKey = key_Normalization(bActualKey) # normalized into 64bits
 
 	bActualKey = dropParityBits(bActualKey) # drop parity bits of given pos
 
@@ -209,11 +209,11 @@ def  round_key_Generate(actualKey): #returns round keys
 
 	for i in range(16):
 		if i in oneBitShiftsRounds:
-			lbActualKey = circularShiftLeft(lbActualKey,1)
-			rbActualKey =  circularShiftLeft(rbActualKey,1)
+			lbActualKey = circularLeftShift(lbActualKey,1)
+			rbActualKey =  circularLeftShift(rbActualKey,1)
 		else:
-			lbActualKey = circularShiftLeft(lbActualKey,2)
-			rbActualKey =  circularShiftLeft(rbActualKey,2)
+			lbActualKey = circularLeftShift(lbActualKey,2)
+			rbActualKey =  circularLeftShift(rbActualKey,2)
 
 
 		combinedKey = lbActualKey + rbActualKey
@@ -224,6 +224,8 @@ def  round_key_Generate(actualKey): #returns round keys
 		rkString = binStr2string(roundkey,8)
 
 		roundKeys.append(roundkey)
+
+	return roundKeys
 
 
 
@@ -327,6 +329,8 @@ def hex2bin(hexString):
 	return binString
 
 
+#-------------------------------------------------E N C R Y P T I O N  -----------------------------------
+
 def  DES_encryption(plainText,key):
 
 		bPlainText = string2binStr(plainText)  #binary  representation of the plain Text
@@ -340,8 +344,9 @@ def  DES_encryption(plainText,key):
 		#initital permutation
 		cipherText = ''
 		cipherText_hex = ''
+		roundKeys = []
 
-		for bPlainText in bPlainText_Blocks : # for each  64 bit blocks
+		for count,bPlainText in enumerate(bPlainText_Blocks) : # for each  64 bit blocks
 
 				bPlainText = permute(bPlainText,initial_permutation_Table,64)
 
@@ -350,7 +355,7 @@ def  DES_encryption(plainText,key):
 				lbPlainText, rbPlainText = twoEqualHalves(bPlainText)
 
 				# generate round keys
-				round_key_Generate(key)
+				roundKeys = round_key_Generate(key)
 
 				for i in range(16):
 
@@ -362,7 +367,8 @@ def  DES_encryption(plainText,key):
 
 					lbPlainText , rbPlainText = swap(xor_Output,rbPlainText)
 
-
+					print(f"\n round {i}: L[ {lbPlainText} ] R[ {rbPlainText} ] "  )
+					print(f" Round key : {roundKeys[i]}")
 				# combined left and right halves
 
 				combined_binString = lbPlainText + rbPlainText
@@ -375,19 +381,22 @@ def  DES_encryption(plainText,key):
 				cipherText_hex += bin2hex(final_Permutation_value)
 
 
-				print("count",bPlainText_Blocks)
+				print(f"cipherText block {count} : {bin2hex(final_Permutation_value)} " )
+				print("------------------------------------------------------------------------")
 
 
-		print("cipherText-hex value",bin2hex(final_Permutation_value))
-		print("cipherText - bin value ",len(hex2bin(cipherText_hex)))
-		print("cipher Text - bin value ",final_Permutation_value)
-		print(" CIpherText - ascii ", cipherText)
-		print()
+		# print("cipherText-hex value",bin2hex(final_Permutation_value))
+		# print("cipherText - bin value ",len(hex2bin(cipherText_hex)))
+		# print("cipher Text - bin value ",final_Permutation_value)
+		# print(" CIpherText - ascii ", cipherText)
+		# print()
+
+		# roundKeys.clear() # removing keys from the list, cause both encryption and decryption shares glabal variable roundKeys to store generated round keys
 
 		return cipherText_hex
 
 
-
+# ------------------------------------------- D E C R Y P T I O N --------------------------------------------------------
 def DES_decryption(cipherText,key): # cipher text takes hex value suppose
 
 		bCipherText = hex2bin(cipherText)  #binary  representation of the plain Text
@@ -397,10 +406,10 @@ def DES_decryption(cipherText,key): # cipher text takes hex value suppose
 
 		plainText =''
 		hexValue = ''
-
+		roundKeys = []
 		#initital permutation
 
-		for bCipherText in bCipherText_Blocks :
+		for count,bCipherText in enumerate(bCipherText_Blocks):
 			bCipherText = permute(bCipherText,initial_permutation_Table,64)
 
 			#split bPlainText into two equal halves
@@ -408,7 +417,7 @@ def DES_decryption(cipherText,key): # cipher text takes hex value suppose
 			rbCipherText, lbCipherText = twoEqualHalves(bCipherText)
 
 			# generate round keys
-			# round_key_Generate(key)
+			roundKeys = round_key_Generate(key)
 
 			for i in range(15,-1,-1):
 
@@ -430,21 +439,33 @@ def DES_decryption(cipherText,key): # cipher text takes hex value suppose
 		#resulting string from different block are concatinated
 
 			plainText += binStr2string(final_Permutation_value)
-			hexValue += bin2hex(final_Permutation_value)
+			# hexValue += bin2hex(final_Permutation_value)
 
-		print("plainText-hex value",bin2hex(final_Permutation_value))
-		print("plainText - bin value ",hex2bin(hexValue))
-		print("plainText - bin value ",final_Permutation_value)
-		print("plainText - ascii ", plainText)
+			print(f"plainText block {count} : {binStr2string(final_Permutation_value)} " )
+			print("------------------------------------------------------------------------")
+		# print("plainText-hex value",bin2hex(final_Permutation_value))
+		# print("plainText - bin value ",hex2bin(hexValue))
+		# print("plainText - bin value ",final_Permutation_value)
+		# print("plainText - ascii ", plainText)
+
+		# roundKeys.clear()
+
+		return plainText
 
 
 if __name__ == '__main__':
-	plainText = "a quick brown fox jumps over the lazy dogs"
+	plainText = "a quick brown fox jump over the lazy dogs"
 	key= "apple"
-	cipherText = DES_encryption(plainText,"apple")
+	cipherText = DES_encryption(plainText,key)
 
-	print(cipherText)
-	DES_decryption(cipherText,"apple")
+	# print(cipherText)
+
+	plainText = DES_decryption(cipherText,key)
+
+	print("----------------------------")
+	print("cipher Text :",cipherText)
+	print("plain Text :",plainText)
+	print("-----------------------------")
 
 
 
